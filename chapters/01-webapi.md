@@ -14,23 +14,158 @@
 （教員から配布された模範コードをここに貼り付ける）
 
 ```swift
-// ここに模範コード全体を貼る
+import SwiftUI
+
+// MARK: - データモデル
+
+struct SearchResponse: Codable {
+   let results: [Song]
+}
+
+struct Song: Codable, Identifiable {
+   let trackId: Int
+   let trackName: String
+   let artistName: String
+   let artworkUrl100: String
+   let previewUrl: String?
+   
+   var id: Int { trackId }
+}
+
+// MARK: - メインビュー
+
+struct ContentView: View {
+   @State private var songs: [Song] = []
+   @State private var searchText: String = ""
+   @State private var isLoading: Bool = false
+   
+   var body: some View {
+      NavigationStack {
+         VStack {
+            // 検索バー
+            HStack {
+               TextField("アーティスト名を入力", text: $searchText)
+                  .textFieldStyle(.roundedBorder)
+               
+               Button("検索") {
+                  Task {
+                     await searchMusic()
+                  }
+               }
+               .buttonStyle(.borderedProminent)
+               .disabled(searchText.isEmpty)
+            }
+            .padding(.horizontal)
+            
+            // 検索結果リスト
+            if isLoading {
+               ProgressView("検索中...")
+                  .padding()
+               Spacer()
+            } else if songs.isEmpty {
+               ContentUnavailableView(
+                  "曲を検索してみよう",
+                  systemImage: "music.note",
+                  description: Text("アーティスト名を入力して検索ボタンを押してください")
+               )
+            } else {
+               List(songs) { song in
+                  SongRow(song: song)
+               }
+            }
+         }
+         .navigationTitle("Music Search")
+      }
+   }
+   
+   // MARK: - API通信
+   
+   func searchMusic() async {
+      guard let encodedText = searchText.addingPercentEncoding(
+         withAllowedCharacters: .urlQueryAllowed
+      ) else { return }
+      
+      let urlString = "https://itunes.apple.com/search?term=\(encodedText)&media=music&country=jp&limit=25"
+      
+      guard let url = URL(string: urlString) else { return }
+      
+      isLoading = true
+      
+      do {
+         let (data, _) = try await URLSession.shared.data(from: url)
+         let response = try JSONDecoder().decode(SearchResponse.self, from: data)
+         songs = response.results
+      } catch {
+         print("エラー: \(error.localizedDescription)")
+         songs = []
+      }
+      
+      isLoading = false
+   }
+}
+
+// MARK: - 曲の行ビュー
+
+struct SongRow: View {
+   let song: Song
+   
+   var body: some View {
+      HStack(spacing: 12) {
+         AsyncImage(url: URL(string: song.artworkUrl100)) { image in
+            image
+               .resizable()
+               .aspectRatio(contentMode: .fill)
+         } placeholder: {
+            Color.gray.opacity(0.3)
+         }
+         .frame(width: 60, height: 60)
+         .clipShape(RoundedRectangle(cornerRadius: 8))
+         
+         VStack(alignment: .leading, spacing: 4) {
+            Text(song.trackName)
+               .font(.headline)
+               .lineLimit(1)
+            
+            Text(song.artistName)
+               .font(.subheadline)
+               .foregroundStyle(.secondary)
+         }
+      }
+      .padding(.vertical, 4)
+   }
+}
+
+#Preview {
+   ContentView()
+}
 ```
 
 **このアプリは何をするものか：**
 
-（アプリの動作を自分の言葉で説明する。スクリーンショットを貼ってもよい。）
+iTunes Search APIを使い、音楽（曲）を検索して結果をリスト表示するもの。
 
 ## コードの詳細解説
 
 ### データモデル（Codable構造体）
 
 ```swift
-// 該当部分のコードを抜粋して貼る
+struct SearchResponse: Codable {
+   let results: [Song]
+}
+
+struct Song: Codable, Identifiable {
+   let trackId: Int
+   let trackName: String
+   let artistName: String
+   let artworkUrl100: String
+   let previewUrl: String?
+   
+   var id: Int { trackId }
+}
 ```
 
 **何をしているか：**
-（この部分が果たしている役割を説明する）
+JSONからデータを構造体に変換して、保持する際に使うデータ構造を定義している。
 
 **なぜこう書くのか：**
 （別の書き方ではなく、この書き方が選ばれている理由を説明する）
