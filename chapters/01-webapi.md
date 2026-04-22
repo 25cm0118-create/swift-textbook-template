@@ -1,7 +1,7 @@
 # 第1章：WebAPIの基本
 
-> 執筆者：原 翔悟
-> 最終更新：2026-04-17
+> 執筆者：原 翔悟<br>
+> 最終更新：2026-04-22
 
 ## この章で学ぶこと
 
@@ -309,9 +309,9 @@ struct SongRow: View {
 
 | 項目 | 説明 | 使用例 |
 |------|------|--------|
-| 例：`Codable` | JSONデータとSwiftの構造体を相互変換するプロトコル | `struct Song: Codable { ... }` |
+| 例：`Codable` | JSONデータとSwiftの構造体を相互変換するプロトコル、Codable=Encodable+Decodable | `struct Song: Codable { ... }` |
 | 例：`async/await` | 非同期処理を同期的に書ける構文 | `let data = try await URLSession.shared.data(from: url)` |
-| | | |
+| `Identifiable` | そのデータが、他と区別できる一意のID（識別子）を持っていること | `struct Song: Codable, Identifiable { let trackId: Int}` |
 | | | |
 | | | |
 
