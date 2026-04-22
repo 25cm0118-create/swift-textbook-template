@@ -296,7 +296,8 @@ struct SongRow: View {
 ```
 
 **何をしているか：**
-
+ContentViewのvar bodyのところで画面全体の構成を書いている。
+Viewの構造体である SongRowの var bodyのところで、1曲の表示のレイアウトを設定している。
 **なぜこう書くのか：**
 
 **もしこう書かなかったら：**
