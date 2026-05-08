@@ -2,17 +2,49 @@
 
 ## 使用した生成AIツール
 
-（例：ChatGPT 無料版 / Claude 無料版 / Gemini など）
+Gemini
 
 ## 質問と回答の記録
 
 ### Q1
 
 **質問：**
-（生成AIに聞いた質問をそのまま書く）
+このコードのプロトコルと、switchについて教えて
+```SwiftUI
+enum Category: String, CaseIterable {
+        case temple = "寺社"
+        case tower = "タワー"
+        case park = "公園"
+
+        var iconName: String {
+            switch self {
+            case .temple: return "building.columns"
+            case .tower: return "antenna.radiowaves.left.and.right"
+            case .park: return "leaf"
+            }
+        }
+```
 
 **AIの回答の要点：**
-（長い回答の場合、要点だけ自分の言葉でまとめる）
+##1. プロトコル（Protocol）<br>
+#String（RawValue）<br>
+```enum Category: String``` と書くことで、各ケースに「実体値（Raw Value）」を持たせています。<br>
+    メリット: ```Category.temple.rawValue``` と呼ぶだけで、"寺社" という文字列を取得できます。<br>
+
+#CaseIterable<br>
+これが非常に強力なプロトコルです。<br>
+役割: 列挙型のすべてのケースを配列として扱えるようにします。<br>
+使い方: Category.allCases と書くだけで、[.temple, .tower, .park] という配列が自動生成されます。<br>
+使い道: SwiftUIの ForEach でループを回して、選択肢（ピッカーやリスト）を一気に作りたいときによく使われます。<br>
+
+##2. switch文の解説<br>
+#self とは？<br>
+ここでの self は「自分自身のインスタンス（現在のケース）」を指します。<br>
+例えば、```let myCategory = Category.park``` としたとき、その中での self は .park になります。<br>
+#網羅性（Exhaustiveness）<br>
+Swiftの switch は、すべてのケースを網羅しているかを厳しくチェックします。<br>
+今回のように temple, tower, park のすべてを書き出している場合、default: を書く必要はありません。<br>
+もし将来 ```case museum``` を追加したのに switch 内で書き忘れると、コンパイラが「忘れてるよ！」とエラーを出して教えてくれます。これがバグを防ぐ大きな武器になります。<br>
 
 **自分の理解：**
 （回答を受けて自分がどう理解したか。納得できたか、さらに疑問が生まれたか）
