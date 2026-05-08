@@ -26,19 +26,19 @@ enum Category: String, CaseIterable {
 ```
 
 **AIの回答の要点：**
-##1. プロトコル（Protocol）<br>
-#String（RawValue）<br>
+##1. プロトコル（Protocol）
+#String（RawValue）
 ```enum Category: String``` と書くことで、各ケースに「実体値（Raw Value）」を持たせています。<br>
     メリット: ```Category.temple.rawValue``` と呼ぶだけで、"寺社" という文字列を取得できます。<br>
 
-#CaseIterable<br>
+#CaseIterable
 これが非常に強力なプロトコルです。<br>
 役割: 列挙型のすべてのケースを配列として扱えるようにします。<br>
 使い方: Category.allCases と書くだけで、[.temple, .tower, .park] という配列が自動生成されます。<br>
 使い道: SwiftUIの ForEach でループを回して、選択肢（ピッカーやリスト）を一気に作りたいときによく使われます。<br>
 
-##2. switch文の解説<br>
-#self とは？<br>
+##2. switch文の解説
+#self とは？
 ここでの self は「自分自身のインスタンス（現在のケース）」を指します。<br>
 例えば、```let myCategory = Category.park``` としたとき、その中での self は .park になります。<br>
 #網羅性（Exhaustiveness）<br>
